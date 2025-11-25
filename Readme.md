@@ -5,8 +5,15 @@ markdown
 
 
 ## 项目结构
-gorm-learning/├── basic-crud/ # 基础 CRUD 操作作业（创建 / 查询 / 更新 / 删除）├── relation-query/ # 关联查询作业（待补充）├── advanced-practice/ # 进阶实战作业（待补充）├── performance-debug/ # 性能与调试作业（待补充）├── common/ # 公共工具（数据库连接等）│ └── db.go├── go.mod # Go 模块配置└── README.md # 项目说明
-plaintext
+gorm-learning /
+├── basic-crud/ # 基础 CRUD 操作作业（创建 / 查询 / 更新 / 删除）
+├── relation-query/ # 关联查询作业（待补充）
+├── advanced-practice/ # 进阶实战作业（待补充）
+├── performance-debug/ # 性能与调试作业（待补充）
+├── common/ # 公共工具（数据库连接等）│
+    └── db.go
+├── go.mod # Go 模块配置
+└── README.md # 项目说明
 
 
 ## 环境依赖
