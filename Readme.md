@@ -19,7 +19,7 @@ plaintext
 ## 运行方法
 1. 克隆仓库：
    ```bash
-   git clone https://github.com/你的用户名/gorm-learning.git
+   git clone https://github.com/caojiahao11/gorm-learning.git
    cd gorm-learning
 配置数据库：
 修改 common/db.go 中的 dsn，替换为你的 MySQL 账号、密码和数据库名：
@@ -45,7 +45,3 @@ advanced-practice（待补充）：
 performance-debug（待补充）：
 SQL 日志、性能优化、错误调试技巧
 plaintext
-
-
-### 注意
-把 `你的用户名` 替换为你 GitHub 的实际用户名，后续补充其他作业后，更新对应的目录说明即可~
