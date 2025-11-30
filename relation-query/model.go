@@ -14,6 +14,7 @@ type User struct {
 	Name   string
 	IDCard IDCard
 	Orders []Order
+	Roles  []Role `gorm:"many2many:user_role"`
 }
 
 // 一对一
@@ -29,4 +30,9 @@ type Order struct {
 	UserID  uint
 	Product string
 	Price   float64
+}
+
+type Role struct {
+	gorm.Model
+	Name string
 }
