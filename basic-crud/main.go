@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gorm-learning/common" // 导入公共包
-
+	"gorm-learning/common" // 导入公共包W
 	"gorm.io/gorm"
 )
 
