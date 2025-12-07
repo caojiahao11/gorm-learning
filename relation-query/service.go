@@ -3,6 +3,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"gorm.io/gorm"
 )
 
@@ -76,6 +78,49 @@ func GetAllUsersWithRelations(db *gorm.DB) ([]User, error) {
 	return users, nil
 }
 
+// GetUserRoles 查询用户所有角色
+func GetUserRoles(db *gorm.DB, userID uint) ([]Role, error) {
+	var user User
+	if err := db.Preload("Roles").First(&user, userID).Error; err != nil {
+		return nil, fmt.Errorf("查询用户失败: %v", err)
+	}
+	return user.Roles, nil
+}
+
+func queryUsersByRoleName(db *gorm.DB, roleName string) {
+	// 关键1：用切片 []Role 接收所有匹配的同名角色
+	var roles []Role
+
+	// 关键2：Find(&roles) 查所有同名角色，并预加载每个角色的用户
+	if err := db.Preload("Users").Where("name = ?", roleName).Find(&roles).Error; err != nil {
+		log.Fatalf("查询角色【%s】失败：%v", roleName, err)
+	}
+
+	// 无匹配角色的情况
+	if len(roles) == 0 {
+		log.Printf("未找到名称为【%s】的角色", roleName)
+		return
+	}
+
+	// 关键3：汇总所有角色下的用户（用map去重，避免同一用户关联多个同名角色时重复）
+	userMap := make(map[uint]User)
+	for _, role := range roles {
+		for _, user := range role.Users {
+			userMap[user.ID] = user // 以用户ID为key，自动去重
+		}
+	}
+
+	// 输出最终结果
+	log.Printf("\n拥有角色【%s】的所有用户（共%d个）：", roleName, len(userMap))
+	if len(userMap) == 0 {
+		log.Printf("该角色下暂无关联用户")
+		return
+	}
+	for _, user := range userMap {
+		log.Printf("用户ID：%d，用户名：%s", user.ID, user.Name)
+	}
+}
+
 // InitTestData 初始化测试数据
 func InitTestData(db *gorm.DB) error {
 	// 创建3个测试用户（带身份证）
@@ -108,6 +153,30 @@ func InitTestData(db *gorm.DB) error {
 	}
 	if err := BatchCreateOrders(db, user3.ID, orderProducts); err != nil {
 		return err
+	}
+
+	// ========== 1. 先创建测试角色（多对多关联的角色数据） ==========
+	roles := []Role{
+		{Name: "管理员"},
+		{Name: "普通用户"},
+		{Name: "VIP用户"},
+	}
+	if err := db.Create(&roles).Error; err != nil {
+		return fmt.Errorf("创建测试角色失败: %v", err)
+	}
+
+	// ========== 3. 给用户分配角色（多对多关联） ==========
+	// 给user1分配「管理员」和「VIP用户」角色
+	if err := db.Model(&user1).Association("Roles").Append(roles[0], roles[2]); err != nil {
+		return fmt.Errorf("给李四分配角色失败: %v", err)
+	}
+	// 给user2分配「普通用户」角色
+	if err := db.Model(&user2).Association("Roles").Append(roles[0], roles[1]); err != nil {
+		return fmt.Errorf("给张三分配角色失败: %v", err)
+	}
+	// 给user3分配「VIP用户」角色
+	if err := db.Model(&user3).Association("Roles").Append(roles[2]); err != nil {
+		return fmt.Errorf("给王五分配角色失败: %v", err)
 	}
 
 	fmt.Println("测试数据初始化完成！")

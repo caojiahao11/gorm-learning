@@ -34,5 +34,6 @@ type Order struct {
 
 type Role struct {
 	gorm.Model
-	Name string
+	Name  string
+	Users []User `gorm:"many2many:user_role;"`
 }

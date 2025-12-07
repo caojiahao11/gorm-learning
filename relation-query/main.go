@@ -12,7 +12,7 @@ func main() {
 	// 1. 初始化数据库（调用公共模块）
 	db := common.InitDB()
 	// 自动迁移模型
-	db.AutoMigrate(&User{}, &IDCard{}, &Order{})
+	db.AutoMigrate(&User{}, &IDCard{}, &Order{}, &Role{})
 
 	// 2. 初始化测试数据
 	if err := InitTestData(db); err != nil {
@@ -53,5 +53,10 @@ func testQuery(db *gorm.DB) {
 	fmt.Printf("\n所有用户及订单数量：\n")
 	for _, user := range allUsers {
 		fmt.Printf("- 用户：%s，订单数：%d\n", user.Name, len(user.Orders))
+		// 查询所有用的所有角色
+		roles, _ := GetUserRoles(db, user.ID)
+		fmt.Println("用户角色:", roles) // 输出：[{1 管理员} {2 编辑}]
 	}
+
+	queryUsersByRoleName(db, "管理员")
 }
