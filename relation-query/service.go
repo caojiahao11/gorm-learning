@@ -25,6 +25,18 @@ func CreateUserWithIDCard(db *gorm.DB, userName string, idCardNumber string) (*U
 	return &user, nil
 }
 
+func CreateUserWithIDCard1(db *gorm.DB, userName string, idCardNumber string) (*User, error) {
+	user := User{Name: userName}
+	if err := db.Create(&user).Error; err != nil {
+		return nil, fmt.Errorf("创建用户失败哦: %v", err)
+	}
+	idCard := IDCard{UserID: user.ID, Number: idCardNumber}
+	if err := db.Create(&idCard).Error; err != nil {
+		return nil, fmt.Errorf("创建身份证失败: %v", err)
+	}
+	return &user, nil
+}
+
 // BatchCreateOrders 批量给用户创建订单（一对多）
 func BatchCreateOrders(db *gorm.DB, userID uint, products []map[string]float64) error {
 	var orders []Order
@@ -136,6 +148,10 @@ func InitTestData(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	user4, err := CreateUserWithIDCard(db, "姬如雪", "1234567890")
+	if err != nil {
+		return err
+	}
 
 	// 定义测试订单数据
 	orderProducts := []map[string]float64{
@@ -152,6 +168,9 @@ func InitTestData(db *gorm.DB) error {
 		return err
 	}
 	if err := BatchCreateOrders(db, user3.ID, orderProducts); err != nil {
+		return err
+	}
+	if err := BatchCreateOrders(db, user4.ID, orderProducts); err != nil {
 		return err
 	}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gorm-learning/common" // 导入公共包W
+
 	"gorm.io/gorm"
 )
 
@@ -12,11 +13,11 @@ func main() {
 	db.AutoMigrate(&User{})
 
 	// 1. 创建操作测试
-	//testCreate(db)
+	testCreate(db)
 	// 2. 查询操作测试
-	//testQuery(db)
+	testQuery(db)
 	// 3. 更新操作测试
-	//testUpdate(db)
+	testUpdate(db)
 	// 4. 删除操作测试
 	testDelete(db)
 }
